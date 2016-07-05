@@ -29,3 +29,5 @@ neurons_number_hist = Counter(neurons_number)
 # ax  = plot_bar_from_counter(sequential_stimulus_hist)
 ax = plot_bar_from_counter(monkey_hist)
 plt.show()
+
+print('number of files', len(filenames))

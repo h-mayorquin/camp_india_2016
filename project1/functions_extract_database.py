@@ -1,8 +1,9 @@
 from __future__ import print_function
+import numpy as np
 
 type_of_data_to_index = {'Time of Cue': 0, 'Time of Sample': 1, 'trialnum': 2, 'spiketrain': 3, 'IsMatch': 4,
                          'fix': 5,
-                         'cuerate': 6, 'cuedelay:': 7, 'samplerate': 8, 'sampledelay': 9, 'Time of Reward': 10}
+                         'cuerate': 6, 'cuedelay': 7, 'samplerate': 8, 'sampledelay': 9, 'Time of Reward': 10}
 
 
 code = [('Cue_onT', 'O'), ('Sample_onT', 'O'), ('trialnum', 'O'), ('TS', 'O'), ('IsMatch', 'O'), ('fix', 'O'), ('cuerate', 'O'),
@@ -42,5 +43,25 @@ def get_spike_train_from_trial(trial):
         return []
 
 
+def get_rates_for_trial(trials, trial_N):
+    trial = trials[trial_N]
+    keys_of_rates = ['cuerate', 'cuedelay', 'samplerate', 'sampledelay', 'IsMatch']
+
+    rates = np.zeros(len(keys_of_rates))
+    for index, key in enumerate(keys_of_rates):
+        rates[index] = trial[type_of_data_to_index[key]]
+
+    return rates
 
 
+def get_rates_for_trials(trials):
+
+    number_of_trials = trials.size
+
+    rates = np.zeros((number_of_trials, 5))
+
+    for trial_N in range(number_of_trials):
+        trial = trials[trial_N]
+        rates[trial_N, :] = get_rates_for_trial(trials, trial_N)
+
+    return rates
