@@ -22,10 +22,9 @@ def plot_raster_from_trials(trials, ax=None):
 
     numbers_of_trials = trials.size
     # We need to plot the raster plot
-    for trial_N in range(numbers_of_trials):
-        trial = trials[trial_N]
-        spikes = get_spike_train_from_trial(trial)
-        aux = np.ones(len(spikes)) * (trial_N + 1)
+    for trial_n in range(numbers_of_trials):
+        spikes = get_spike_train_from_trial(trials, trial_n)
+        aux = np.ones(len(spikes)) * (trial_n + 1)
         ax.plot(spikes, aux, '*', color='black', markersize=20)
 
     ax.set_ylabel('Trial')
@@ -67,9 +66,8 @@ def plot_psth_from_trials(trials, ax=None):
     numbers_of_trials = trials.size
     all_spikes = []
     # We need to plot the raster plot
-    for trial_N in range(numbers_of_trials):
-        trial = trials[trial_N]
-        spikes = get_spike_train_from_trial(trial)
+    for trial_n in range(numbers_of_trials):
+        spikes = get_spike_train_from_trial(trials, trial_n)
         all_spikes = np.concatenate((all_spikes, spikes))
 
     histogram_data = ax.hist(all_spikes, bins=10)
@@ -84,6 +82,7 @@ def plot_psth_grid(blocks, block_to_grid_map):
     fig = plt.figure(figsize=(16, 12))
     number_of_blocks = blocks.size
     gs = gridspec.GridSpec(3, 3)
+
     for block_N in range(number_of_blocks):
         trials = blocks[:, block_N][0][0][0]
         x, y = block_to_grid_map[block_N + 1]

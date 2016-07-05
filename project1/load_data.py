@@ -37,12 +37,12 @@ trial_N = 0
 
 print('This should be 12', number_of_trials)
 
-block_to_grid_map = {1:(1, 2), 2: (0, 2), 3:(0, 1), 4: (0, 0), 5: (1, 0),
+block_to_grid_map = {1: (1, 2), 2: (0, 2), 3:(0, 1), 4: (0, 0), 5: (1, 0),
                      6: (2, 0), 7: (2, 1), 8: (2, 2), 9: (1, 1)}
 
 # Here we can plot the raster
 # fig = plot_psth_grid(blocks, block_to_grid_map)
-#fig = plot_spike_raster_grid(blocks, block_to_grid_map)
+# fig = plot_spike_raster_grid(blocks, block_to_grid_map)
 # plt.show(fig)
 
 # Get the trial data
@@ -52,5 +52,5 @@ rates1 = get_rates_from_trial(trials, trial_N)
 print(rates1)
 
 rates = get_rates_from_trials(trials)
-
+print(trials.shape)
 print(rates)
