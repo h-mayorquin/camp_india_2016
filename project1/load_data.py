@@ -1,6 +1,11 @@
 from __future__ import print_function
 import scipy.io as sio
 
+import matplotlib.pyplot as plt
+import numpy as np
+
+from functions_plot import plot_raster_from_trials
+
 from functions_extract_database import view_trial, get_spike_train_from_trial
 
 
@@ -16,7 +21,7 @@ data = data_base['MatData']
 # 8 or 9 blocks of 12 trials each
 blocks = data[0][0][0]
 print('This should be 8 or 9', blocks.shape)
-
+number_of_blocks = 
 # Which of all the blocks you chose
 block_N = 6
 
@@ -25,14 +30,10 @@ numbers_of_trials = trials.size
 
 print('This should be 12', numbers_of_trials)
 
-# Which of the trials you chose
-trial_N = 4
-for trial_N in range(numbers_of_trials):
-    trial = trials[trial_N]
-    spikes = get_spike_train_from_trial(trial)
-    print(spikes)
 
-# view_trial(trials, trial_N)
+ax = plot_raster_from_trials(trials)
+plt.show()
+
 
 
 
