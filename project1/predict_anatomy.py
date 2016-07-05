@@ -2,6 +2,7 @@ from __future__ import print_function
 import openpyxl
 import scipy.io as sio
 import numpy as np
+from sklearn import linear_model
 import matplotlib.pyplot as plt
 
 from functions_extract_database import get_rates_from_trials
@@ -23,12 +24,11 @@ for file_name, neuron in zip(pre_spatial_set.columns[0], pre_spatial_set.columns
 number_of_files = len(file_names)
 
 # Get the data in the sklearn matrix format
-number_of_trials = 12
-X = np.zeros((number_of_files * number_of_trials, 5))
 block_N = 0
-
 folder = './data/'
 format_type = '.mat'
+
+rates_list = []
 
 for file_index, file_name in enumerate(file_names[1:]):
     aux = folder + file_name + format_type
@@ -39,7 +39,27 @@ for file_index, file_name in enumerate(file_names[1:]):
     blocks = data[0][0][0]
     trials = blocks[:, block_N][0][0][0]
     number_of_trials = trials.size
-    print(trials.shape)
-    print(file_index)
     rates = get_rates_from_trials(trials)
-    X[file_index:file_index + number_of_trials, :] = rates
+
+    rates_list.append(rates.mean(axis=0))
+
+# This will be the training examples
+X = np.stack(rates_list, axis=0)
+X = X[:, :4]
+# Now we will get the labels
+y = []
+for area in pre_spatial_set.columns[4]:
+    y.append(area.value)
+
+y = np.array(y)[1:]
+
+# Now the machine learning
+
+from sklearn.cross_validation import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+clf = linear_model.LogisticRegression()
+clf.fit(X_train, y_train)
+score = clf.score(X_test, y_test)
+print(score)
+
