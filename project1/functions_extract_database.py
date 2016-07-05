@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+
 def view_trial(trials, trial_N):
     """
     Prints all the details from a given trial
