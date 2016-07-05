@@ -1,7 +1,7 @@
 from __future__ import print_function
 import scipy.io as sio
 
-from functions_extract_database import view_trial
+from functions_extract_database import view_trial, get_spike_train_from_trial
 
 
 folder = "./data/"
@@ -21,17 +21,18 @@ print('This should be 8 or 9', blocks.shape)
 block_N = 6
 
 trials = blocks[:, block_N][0][0][0]
-print('This should be 12', trials.shape)
+numbers_of_trials = trials.size
+
+print('This should be 12', numbers_of_trials)
 
 # Which of the trials you chose
 trial_N = 4
-trial = trials[trial_N]
+for trial_N in range(numbers_of_trials):
+    trial = trials[trial_N]
+    spikes = get_spike_train_from_trial(trial)
+    print(spikes)
 
-code = [('Cue_onT', 'O'), ('Sample_onT', 'O'), ('trialnum', 'O'), ('TS', 'O'), ('IsMatch', 'O'), ('fix', 'O'), ('cuerate', 'O'),
- ('cuedelay', 'O'), ('samplerate', 'O'), ('sampledelay', 'O'), ('Reward_onT', 'O')]
-
-type_of_data_to_index = {'Time of Cue': 0, 'Time of Sample': 1, 'trialnum': 2, 'spiketrain': 3, 'IsMatch': 4, 'fix': 5,
-                         'cuerate': 6, 'cuedelay:': 7, 'samplerate': 8, 'sampledelay': 9, 'Time of Reward': 10}
+# view_trial(trials, trial_N)
 
 
-view_trial(trials, trial_N)
+
