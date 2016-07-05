@@ -43,7 +43,7 @@ def get_spike_train_from_trial(trial):
         return []
 
 
-def get_rates_for_trial(trials, trial_N):
+def get_rates_from_trial(trials, trial_N):
     trial = trials[trial_N]
     keys_of_rates = ['cuerate', 'cuedelay', 'samplerate', 'sampledelay', 'IsMatch']
 
@@ -54,7 +54,7 @@ def get_rates_for_trial(trials, trial_N):
     return rates
 
 
-def get_rates_for_trials(trials):
+def get_rates_from_trials(trials):
 
     number_of_trials = trials.size
 
@@ -62,6 +62,6 @@ def get_rates_for_trials(trials):
 
     for trial_N in range(number_of_trials):
         trial = trials[trial_N]
-        rates[trial_N, :] = get_rates_for_trial(trials, trial_N)
+        rates[trial_N, :] = get_rates_from_trial(trials, trial_N)
 
     return rates
