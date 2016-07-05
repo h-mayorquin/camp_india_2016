@@ -7,7 +7,7 @@ import matplotlib.gridspec as gridspec
 import numpy as np
 
 from functions_plot import plot_raster_from_trials, plot_spike_raster_grid
-from functions_plot import plot_raster_from_trials, plot_psth_from_trials
+from functions_plot import plot_psth_grid, plot_psth_from_trials
 from functions_extract_database import view_trial, get_spike_train_from_trial
 
 
@@ -39,12 +39,9 @@ block_to_grid_map = {1:(1, 2), 2: (0, 2), 3:(0, 1), 4: (0, 0), 5: (1, 0),
 
 
 
-ax, data = plot_psth_from_trials(trials)
-print(data[0])
-print(data[0].size)
-plt.show()
+fig = plot_psth_grid(blocks, block_to_grid_map)
 # fig = plot_spike_raster_grid(blocks, block_to_grid_map)
-# plt.show(fig)
+plt.show(fig)
 
 
 

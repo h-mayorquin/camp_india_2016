@@ -36,6 +36,7 @@ def plot_raster_from_trials(trials, ax=None):
 
 
 def plot_spike_raster_grid(blocks, block_to_grid_map):
+
     fig = plt.figure(figsize=(16, 12))
     number_of_blocks = blocks.size
     gs = gridspec.GridSpec(3, 3)
@@ -77,4 +78,16 @@ def plot_psth_from_trials(trials, ax=None):
 
     return ax, histogram_data
 
-def plot_psth_grid(blocks block_to_grid_map):
+
+def plot_psth_grid(blocks, block_to_grid_map):
+
+    fig = plt.figure(figsize=(16, 12))
+    number_of_blocks = blocks.size
+    gs = gridspec.GridSpec(3, 3)
+    for block_N in range(number_of_blocks):
+        trials = blocks[:, block_N][0][0][0]
+        x, y = block_to_grid_map[block_N + 1]
+        ax = fig.add_subplot(gs[x, y])
+        ax = plot_psth_from_trials(trials, ax)
+
+    return fig
