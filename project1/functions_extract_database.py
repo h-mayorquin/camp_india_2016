@@ -67,7 +67,8 @@ def get_rates_from_trial(trials, trial_n):
 
     rates = np.zeros(len(keys_of_rates))
     for index, key in enumerate(keys_of_rates):
-        rates[index] = trial[type_of_data_to_index[key]]
+        if trial[type_of_data_to_index[key]]:
+            rates[index] = trial[type_of_data_to_index[key]]
 
     return rates
 

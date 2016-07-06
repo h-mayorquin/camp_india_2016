@@ -25,7 +25,7 @@ def plot_raster_from_trials(trials, ax=None):
     for trial_n in range(numbers_of_trials):
         spikes = get_spike_train_from_trial(trials, trial_n)
         aux = np.ones(len(spikes)) * (trial_n + 1)
-        ax.plot(spikes, aux, '*', color='black', markersize=20)
+        ax.plot(spikes, aux, 's', color='black', markersize=20)
 
     ax.set_ylabel('Trial')
     ax.set_xlabel('Time (ms)')
@@ -44,6 +44,7 @@ def plot_spike_raster_grid(blocks, block_to_grid_map):
         x, y = block_to_grid_map[block_N + 1]
         ax = fig.add_subplot(gs[x, y])
         ax = plot_raster_from_trials(trials, ax)
+        # ax.axis('off')
 
     return fig
 
@@ -87,6 +88,11 @@ def plot_psth_grid(blocks, block_to_grid_map):
         trials = blocks[:, block_N][0][0][0]
         x, y = block_to_grid_map[block_N + 1]
         ax = fig.add_subplot(gs[x, y])
-        ax = plot_psth_from_trials(trials, ax)
+        ax, data = plot_psth_from_trials(trials, ax)
+
+        # Format
+        ax.set_ylim([0, 10])
+        if(y != 2):
+            ax.set_xlabel(' ')
 
     return fig

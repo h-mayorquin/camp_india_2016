@@ -12,7 +12,7 @@ from functions_extract_database import view_trial, get_spike_train_from_trial, g
 
 
 folder = "./data/"
-data_base_name = 'ADR001_1_3000'
+data_base_name = 'ADR011_1_3071'
 format = '.mat'
 data_base = sio.loadmat(folder + data_base_name + format)
 
@@ -41,9 +41,9 @@ block_to_grid_map = {1: (1, 2), 2: (0, 2), 3:(0, 1), 4: (0, 0), 5: (1, 0),
                      6: (2, 0), 7: (2, 1), 8: (2, 2), 9: (1, 1)}
 
 # Here we can plot the raster
-# fig = plot_psth_grid(blocks, block_to_grid_map)
+fig = plot_psth_grid(blocks, block_to_grid_map)
 # fig = plot_spike_raster_grid(blocks, block_to_grid_map)
-# plt.show(fig)
+plt.show(fig)
 
 # Get the trial data
 view_trial(trials, trial_N)
