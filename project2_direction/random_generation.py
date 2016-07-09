@@ -9,7 +9,7 @@ sns.set(font_scale=2.0)
 sequence_length = 9
 sorted_array = np.arange(sequence_length)
 
-N_sequences = 10
+N_sequences = 100
 sequences = np.zeros((N_sequences + 1, sequence_length))
 
 for i in range(N_sequences):
