@@ -3,7 +3,7 @@ from brian2 import *
 import seaborn as sns
 sns.set(font_scale=2.0)
 
-N = 10
+N = 20
 
 # Neuron Parameters
 g_l = 0.05 * msiemens / cm2
@@ -37,37 +37,85 @@ gi_max = 67 * nsiemens
 I_0 = (0.25 * namp) / (aux)
 
 # Let's build the networks
-eqs = """
-dv / dt = /-(g_l / Cm) * (v - E_l) + (g_l / Cm) * Delta * exp((v - V_t) / Delta) - (w / aux) - (ge /aux) * (v - E_exc) - (gi / aux) *(v - E_inh): volt (unless refractory)
-dw / dt = (1 / tau_w) * (a * (v - E_l) - w) :  amp
+
+a_tc = 0.04 * usiemens
+b_tc = 0.0 * namp
+
+
+eqs_tc = """
+dv / dt = -(g_l / Cm) * (v - E_l) + (g_l / Cm) * Delta * exp((v - V_t) / Delta) - (w / aux) - (ge /aux) * (v - E_exc) - (gi / aux) *(v - E_inh): volt (unless refractory)
+dw / dt = (1 / tau_w) * (a_tc * (v - E_l) - w) :  amp
 dge/dt = -ge/tau_e : siemens
 dgi/dt = -gi/tau_i : siemens
 """
 
-reset = '''
+reset_tc = '''
 v = E_l
-w += b
+w += b_tc
 '''
-TC = NeuronGroup(N, eqs, threshold='v > V_t', reset=reset, refractory=2.5*ms, method='euler')
-RE = NeuronGroup(N, eqs, threshold='v > V_t', reset=reset, refractory=2.5*ms, method='euler')
-
-M = StateMonitor(TC, ['v', 'w'], record=0)
 
 
-# Connect
-indices = array([0, 2, 1])
-times = array([100, 200, 300])*ms
-G = SpikeGeneratorGroup(3, indices, times)
 
-S_exc = Synapses(TC, RE, on_pre='ge = ge_max')
-S_exc.connect(p=0.02)
+a_re = 0.08 * usiemens
+b_re = 0.03 * namp
 
-S_inh = Synapses(RE, TC, on_pre='gi = gi_max')
-S_inh.connect(p=0.08)
+
+eqs_re = """
+dv / dt = -(g_l / Cm) * (v - E_l) + (g_l / Cm) * Delta * exp((v - V_t) / Delta) - (w / aux) - (ge /aux) * (v - E_exc) - (gi / aux) *(v - E_inh): volt (unless refractory)
+dw / dt = (1 / tau_w) * (a_re * (v - E_l) - w) :  amp
+dge/dt = -ge/tau_e : siemens
+dgi/dt = -gi/tau_i : siemens
+"""
+
+reset_re = '''
+v = E_l
+w += b_re
+'''
+TC = NeuronGroup(N, eqs_tc, threshold='v > V_t', reset=reset_tc, refractory=2.5*ms, method='euler')
+RE = NeuronGroup(N, eqs_re, threshold='v > V_t', reset=reset_re, refractory=2.5*ms, method='euler')
+
+M_tc = StateMonitor(TC, ['v', 'w', 'ge'], record=0)
+spikes_tc = SpikeMonitor(TC)
+
+M_re = StateMonitor(RE, ['v', 'w', 'ge'], record=0)
+spikes_tre = SpikeMonitor(RE)
+
+
+# Initialization input
+frequency = 400 * Hz
+dt_array = 0.1
+values = np.arange(0, 1000, dt_array)
+values[values <= 50] = 1
+values[values > 50] = 0
+
+input_rates = TimedArray(values * frequency, dt=0.1*ms)
+init_input = PoissonGroup(N=1, rates='input_rates(t)')
+
+if True:
+    S_init_tc = Synapses(init_input, TC, on_pre='ge += ge_max')
+    S_init_tc.connect(p=1)
+    S_init_re = Synapses(init_input, RE, on_pre='ge += ge_max')
+    S_init_re.connect(p=1)
+
+# Connect the populations
+if False:
+    S_exc = Synapses(TC, RE, on_pre='ge += ge_max')
+    S_exc.connect(p=0.02)
+
+    S_inh = Synapses(RE, TC, on_pre='gi += gi_max')
+    S_inh.connect(p=0.08)
+
+    S_rec = Synapses(RE, RE, on_pre='gi += gi_max')
+    S_inh.connect(p=0.08)
+
+
+# plot(spikes_tc.t/ms, spikes_tc.i, '.k')
+# xlabel('Time (ms)')
 
 
 
 if True:
+    # run(1000 * ms)
     run(1000 * ms)
 
     # Plot here
@@ -76,17 +124,21 @@ if True:
     fig.suptitle(data)
 
     ax1 = fig.add_subplot(211)
-    ax1.plot(M.t/ms, (M.v[0] / mV),label='voltage')
+
+    ax1.plot(M_tc.t / ms, (M_tc.v[0] / mV), label='voltage')
+
+    # ax1.plot(spikes_tc.t / ms, spikes_tc.i, '*')
 
     ax1.set_ylabel('v')
-    ax1.set_ylim([-80, -45])
+    # ax1.set_ylim([-80, -45])
 
     ax1.legend()
 
     ax2 = fig.add_subplot(212, sharex=ax1)
-    w_sta = a * (M.v[0] - E_l) / aux
-    ax2.plot(M.t/ms, (M.w[0] / aux), label='w')
-    ax2.plot(M.t/ms, w_sta, label='w*')
+    w_sta = a * (M_tc.v[0] - E_l) / aux
+    # ax2.plot(M_tc.t/ms, (M_tc.w[0] / aux), label='w')
+    # ax2.plot(M_tc.t/ms, w_sta, label='w*')
+    ax2.plot(spikes_tc.t / ms, spikes_tc.i, '*')
 
     ax2.set_xlabel('Time (ms)')
     ax2.set_ylabel('w')
