@@ -1,8 +1,8 @@
 import numpy as np
 import brian2 as brian
 from brian2 import *
-
-print(10 * brian.mV)
+import seaborn as sns
+sns.set(font_scale=2.0)
 
 N = 1
 
@@ -16,19 +16,28 @@ Delta = 2.5 * mV  # Steep when approaching the threshold
 S = 20000 * um2  # Membrane area
 
 a = 0.001 * usiemens  # dynamics of adaptation
-b = 0.04 * namp  # w increases by this value at each spike
+b = 0.005 * namp  # w increases by this value at each spike
 
 f_m = g_l / Cm
 # tau_ m = 1 / f_m
 aux = S * Cm
 
 
-I = 0.25 * namp
+I_0 = 0.25 * namp
+
+# Let's create the pulse
+dt_array = 0.1
+values = np.arange(0, 1000, dt_array)
+values[values < 200] = 0
+values[values > 600] = 0
+values[(200 <= values) * (values <= 600)] = 1
+
+I = TimedArray(values * I_0, dt=0.1*ms)
 
 start_scope()
 # Equations
 eqs = """
-dv / dt = -f_m * (v - E_l) + f_m * Delta * exp((v - V_t) / Delta) - (w / aux) + (I / aux) : volt (unless refractory)
+dv / dt = -f_m * (v - E_l) + f_m * Delta * exp((v - V_t) / Delta) - (w / aux) + (I(t) / aux) : volt (unless refractory)
 dw / dt = (1 / tau_w) * (a * (v - E_l) - w) :  amp
 """
 
@@ -48,20 +57,34 @@ G = brian.NeuronGroup(N, eqs, threshold='v > V_t', reset=reset, refractory=2.5*m
 M = brian.StateMonitor(G, ['v', 'w'], record=0)
 
 # Run this
-if True:
-    brian.run(500 * ms)
 
-    subplot(211)
-    brian.plot(M.t/ms, (M.v[0] / mV),label='voltage')
-    brian.xlabel('Time (ms)')
-    brian.ylabel('v')
-    ylim([-65, -45])
+# Run the model
+brian.run(1000 * ms)
 
-    subplot(212)
-    brian.plot(M.t/ms, (M.w[0]),label='w')
-    brian.axhline(w_avg / amp, label='V = -55 mV', color='black')
-    brian.xlabel('Time (ms)')
-    brian.ylabel('w')
+# Plot here
+fig = plt.figure(figsize=(16, 12))
+data = 'Experiment for (a = ' + str(a) + ', b = ' + str(b) + ' )'
+fig.suptitle(data)
 
-    legend()
-    brian.show()
+ax1 = fig.add_subplot(211)
+ax1.plot(M.t/ms, (M.v[0] / mV),label='voltage')
+
+ax1.set_ylabel('v')
+ax1.set_ylim([-80, -45])
+
+ax1.legend()
+
+ax2 = fig.add_subplot(212, sharex=ax1)
+w_sta = a * (M.v[0] - E_l) / aux
+ax2.plot(M.t/ms, (M.w[0] / aux), label='w')
+ax2.plot(M.t/ms, w_sta, label='w*')
+ax2.axhline(w_avg / amp, label='w*(-55 mV)', color='black')
+
+ax2.set_xlabel('Time (ms)')
+ax2.set_ylabel('w')
+
+ax2.legend()
+
+plt.setp(ax1.get_xticklabels(), visible=False)
+
+brian.show()
