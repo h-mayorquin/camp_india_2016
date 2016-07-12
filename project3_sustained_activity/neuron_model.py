@@ -1,5 +1,4 @@
 import numpy as np
-import brian2 as brian
 from brian2 import *
 import seaborn as sns
 sns.set(font_scale=2.0)
@@ -16,7 +15,10 @@ Delta = 2.5 * mV  # Steep when approaching the threshold
 S = 20000 * um2  # Membrane area
 
 a = 0.001 * usiemens  # dynamics of adaptation
+a = 0.04 * usiemens  # dynamics of adaptation
+b = 0.04 * namp  # w increases by this value at each spike
 b = 0.005 * namp  # w increases by this value at each spike
+b = 0 * namp  # w increases by this value at each spike
 
 f_m = g_l / Cm
 # tau_ m = 1 / f_m
@@ -24,6 +26,7 @@ aux = S * Cm
 
 
 I_0 = 0.25 * namp
+I_0 = -0.25 * namp
 
 # Let's create the pulse
 dt_array = 0.1
@@ -47,19 +50,19 @@ w += b
 '''
 
 V_avg = -55 * mV
-w_avg = a * (V_avg - E_l)
+w_avg = a * (V_avg - E_l) / aux
 
 
 # Define neuron
-G = brian.NeuronGroup(N, eqs, threshold='v > V_t', reset=reset, refractory=2.5*ms, method='euler')
+G = NeuronGroup(N, eqs, threshold='v > V_t', reset=reset, refractory=2.5*ms, method='euler')
 
 # State monitor
-M = brian.StateMonitor(G, ['v', 'w'], record=0)
+M = StateMonitor(G, ['v', 'w'], record=0)
 
 # Run this
 
 # Run the model
-brian.run(1000 * ms)
+run(1000 * ms)
 
 # Plot here
 fig = plt.figure(figsize=(16, 12))
@@ -78,7 +81,7 @@ ax2 = fig.add_subplot(212, sharex=ax1)
 w_sta = a * (M.v[0] - E_l) / aux
 ax2.plot(M.t/ms, (M.w[0] / aux), label='w')
 ax2.plot(M.t/ms, w_sta, label='w*')
-ax2.axhline(w_avg / amp, label='w*(-55 mV)', color='black')
+ax2.axhline(np.array(w_avg), label='w*(-55 mV)', color='black')
 
 ax2.set_xlabel('Time (ms)')
 ax2.set_ylabel('w')
@@ -87,4 +90,4 @@ ax2.legend()
 
 plt.setp(ax1.get_xticklabels(), visible=False)
 
-brian.show()
+plt.show()
