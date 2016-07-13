@@ -3,7 +3,7 @@ from brian2 import *
 import seaborn as sns
 sns.set(font_scale=2.0)
 
-N = 20
+N = 50
 
 # Neuron Parameters
 g_l = 0.05 * msiemens / cm2
@@ -13,12 +13,6 @@ V_t = -50 * mV  # Threshold
 tau_w = 600 * ms  # Adaptation time constant of w
 Delta = 2.5 * mV  # Steep when approaching the threshold
 S = 20000 * um2  # Membrane area
-
-a = 0.001 * usiemens  # dynamics of adaptation
-a = 0.04 * usiemens  # dynamics of adaptation
-b = 0.04 * namp  # w increases by this value at each spike
-b = 0.005 * namp  # w increases by this value at each spike
-b = 0 * namp  # w increases by this value at each spike
 
 f_m = g_l / Cm
 # tau_ m = 1 / f_m
@@ -54,8 +48,6 @@ v = E_l
 w += b_tc
 '''
 
-
-
 a_re = 0.08 * usiemens
 b_re = 0.03 * namp
 
@@ -78,15 +70,15 @@ M_tc = StateMonitor(TC, ['v', 'w', 'ge'], record=0)
 spikes_tc = SpikeMonitor(TC)
 
 M_re = StateMonitor(RE, ['v', 'w', 'ge'], record=0)
-spikes_tre = SpikeMonitor(RE)
-
+spikes_re = SpikeMonitor(RE)
 
 # Initialization input
 frequency = 400 * Hz
 dt_array = 0.1
+t_stimuli = 200
 values = np.arange(0, 1000, dt_array)
-values[values <= 50] = 1
-values[values > 50] = 0
+values[values <= t_stimuli] = 1
+values[values > t_stimuli] = 0
 
 input_rates = TimedArray(values * frequency, dt=0.1*ms)
 init_input = PoissonGroup(N=1, rates='input_rates(t)')
@@ -98,7 +90,7 @@ if True:
     S_init_re.connect(p=1)
 
 # Connect the populations
-if False:
+if True:
     S_exc = Synapses(TC, RE, on_pre='ge += ge_max')
     S_exc.connect(p=0.02)
 
@@ -109,63 +101,50 @@ if False:
     S_inh.connect(p=0.08)
 
 
-# plot(spikes_tc.t/ms, spikes_tc.i, '.k')
-# xlabel('Time (ms)')
-
-
+run(1000 * ms)
 
 if True:
     # run(1000 * ms)
-    run(1000 * ms)
 
     # Plot here
     fig = plt.figure(figsize=(16, 12))
-    data = 'Experiment for (a = ' + str(a) + ', b = ' + str(b) + ' )'
-    fig.suptitle(data)
 
     ax1 = fig.add_subplot(211)
 
-    ax1.plot(M_tc.t / ms, (M_tc.v[0] / mV), label='voltage')
+    ax1.plot(spikes_re.t / ms, spikes_re.i, '*')
 
-    # ax1.plot(spikes_tc.t / ms, spikes_tc.i, '*')
-
-    ax1.set_ylabel('v')
     # ax1.set_ylim([-80, -45])
-
-    ax1.legend()
+    ax1.set_xlim([0, 1000])
 
     ax2 = fig.add_subplot(212, sharex=ax1)
-    w_sta = a * (M_tc.v[0] - E_l) / aux
-    # ax2.plot(M_tc.t/ms, (M_tc.w[0] / aux), label='w')
-    # ax2.plot(M_tc.t/ms, w_sta, label='w*')
+
     ax2.plot(spikes_tc.t / ms, spikes_tc.i, '*')
 
     ax2.set_xlabel('Time (ms)')
-    ax2.set_ylabel('w')
-
-    ax2.legend()
+    ax2.set_xlim([0, 1000])
 
     plt.setp(ax1.get_xticklabels(), visible=False)
 
     plt.show()
 
+if True:
+
+    # Plot here
+    fig = plt.figure(figsize=(16, 12))
+
+    ax1 = fig.add_subplot(221)
+    ax1.plot(M_tc.t / ms, (M_tc.ge[0]))
+
+    ax2 = fig.add_subplot(222)
+    ax2.plot(M_re.t / ms, (M_re.ge[0]))
+
+    ax3 = fig.add_subplot(223)
+    ax3.plot(M_tc.t / ms, M_tc.v[0] / mV)
+
+    ax4 = fig.add_subplot(224)
+    ax4.plot(M_re.t / ms, M_re.v[0] / mV)
+
+    plt.show()
+
+
 # Synapes equation
-
-syneqs = '''
-    gsyn    :1
-    dx/dt = -x/taupre :1    (event-driven)
-    dy/dt = -y/taupost :1   (event-driven)
-    '''
-
-preeqs = '''
-    ge_post += gsyn
-    x += Apre
-    gsyn += -y*gmax
-    gsyn = clip(gsyn, 0, gmax)
-    '''
-
-posteqs = '''
-    y += Apost
-    gsyn += x*gmax
-    gsyn = clip(gsyn, 0, gmax)
-    '''
