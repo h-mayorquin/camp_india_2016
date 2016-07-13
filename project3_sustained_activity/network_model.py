@@ -75,7 +75,7 @@ spikes_re = SpikeMonitor(RE)
 # Initialization input
 frequency = 400 * Hz
 dt_array = 0.1
-t_stimuli = 200
+t_stimuli = 50
 values = np.arange(0, 1000, dt_array)
 values[values <= t_stimuli] = 1
 values[values > t_stimuli] = 0
@@ -85,20 +85,20 @@ init_input = PoissonGroup(N=1, rates='input_rates(t)')
 
 if True:
     S_init_tc = Synapses(init_input, TC, on_pre='ge += ge_max')
-    S_init_tc.connect(p=1)
+    S_init_tc.connect(p=0.1)
     S_init_re = Synapses(init_input, RE, on_pre='ge += ge_max')
-    S_init_re.connect(p=1)
+    S_init_re.connect(p=0.1)
 
 # Connect the populations
 if True:
     S_exc = Synapses(TC, RE, on_pre='ge += ge_max')
-    S_exc.connect(p=0.02)
+    S_exc.connect(p=0.2)
 
     S_inh = Synapses(RE, TC, on_pre='gi += gi_max')
-    S_inh.connect(p=0.08)
+    S_inh.connect(p=0.8)
 
     S_rec = Synapses(RE, RE, on_pre='gi += gi_max')
-    S_inh.connect(p=0.08)
+    S_inh.connect(p=0.8)
 
 
 run(1000 * ms)
