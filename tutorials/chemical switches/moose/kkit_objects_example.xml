@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns:moose="http://www.moose.ncbs.res.in" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns="http://www.sbml.org/sbml/level3/version1/core" xmlns:addedPrefix="http://www.sbml.org/sbml/level3/version1" level="3" version="1">
+  <model id="kkit_objects_example" substanceUnits="substance" timeUnits="second" extentUnits="substance">
+    <annotation>
+      <moose:ModelAnnotation>
+        <moose:plots> /kinetics[0]/A;/kinetics[0]/B;/kinetics[0]/tot1;/kinetics[0]/C;/kinetics[0]/D;/kinetics[0]/E;/kinetics[0]/F;</moose:plots>
+      </moose:ModelAnnotation>
+    </annotation>
+    <listOfUnitDefinitions>
+      <unitDefinition id="volume">
+        <listOfUnits>
+          <unit kind="litre" exponent="1" scale="0" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="substance">
+        <listOfUnits>
+          <unit kind="item" exponent="1" scale="0" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="per_item_per_second">
+        <listOfUnits>
+          <unit kind="item" exponent="-1" scale="0" multiplier="1"/>
+          <unit kind="second" exponent="-1" scale="0" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="per_second">
+        <listOfUnits>
+          <unit kind="second" exponent="-1" scale="0" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+    </listOfUnitDefinitions>
+    <listOfCompartments>
+      <compartment id="kinetics_463_0_" name="kinetics" spatialDimensions="3" size="1.66666666666667e-18" units="volume" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species id="B_469_0_" name="B" compartment="kinetics_463_0_" initialAmount="0" substanceUnits="substance" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>
+      <species id="A_471_0_" name="A" compartment="kinetics_463_0_" initialAmount="2.0073805" substanceUnits="substance" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>
+      <species id="tot1_473_0_" name="tot1" compartment="kinetics_463_0_" initialAmount="0" substanceUnits="substance" hasOnlySubstanceUnits="true" boundaryCondition="true" constant="false"/>
+      <species id="C_475_0_" name="C" compartment="kinetics_463_0_" initialAmount="0" substanceUnits="substance" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>
+      <species id="D_479_0_" name="D" compartment="kinetics_463_0_" initialAmount="1.00369025" substanceUnits="substance" hasOnlySubstanceUnits="true" boundaryCondition="true" constant="true"/>
+      <species id="E_485_0_" name="E" compartment="kinetics_463_0_" initialAmount="0" substanceUnits="substance" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>
+      <species id="MassActionEnz_487_0_" name="MassActionEnz" compartment="kinetics_463_0_" initialAmount="1.00369025" substanceUnits="substance" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>
+      <species id="e1_cplx_490_0_" name="MassActionEnz_e1_e1_cplx" compartment="kinetics_463_0_" initialAmount="0" substanceUnits="substance" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>
+      <species id="MM_Enz_492_0_" name="MM_Enz" compartment="kinetics_463_0_" initialAmount="1.00369025" substanceUnits="substance" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>
+      <species id="F_496_0_" name="F" compartment="kinetics_463_0_" initialAmount="0" substanceUnits="substance" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>
+    </listOfSpecies>
+    <listOfRules>
+      <assignmentRule variable="tot1_473_0_">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <plus/>
+            <ci> A_471_0_ </ci>
+            <ci> B_469_0_ </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+    </listOfRules>
+    <listOfReactions>
+      <reaction id="Reac1_481_0_" name="Reac1" reversible="true" fast="false">
+        <listOfReactants>
+          <speciesReference species="A_471_0_" stoichiometry="1" constant="false"/>
+          <speciesReference species="D_479_0_" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="B_469_0_" stoichiometry="1" constant="false"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <minus/>
+              <apply>
+                <times/>
+                <ci> Reac1_481_0__Kf </ci>
+                <ci> A_471_0_ </ci>
+                <ci> D_479_0_ </ci>
+              </apply>
+              <apply>
+                <times/>
+                <ci> Reac1_481_0__Kb </ci>
+                <ci> B_469_0_ </ci>
+              </apply>
+            </apply>
+          </math>
+          <listOfLocalParameters>
+            <localParameter id="Reac1_481_0__Kf" value="0.199264663575241" units="per_item_per_second"/>
+            <localParameter id="Reac1_481_0__Kb" value="0.1" units="per_second"/>
+          </listOfLocalParameters>
+        </kineticLaw>
+      </reaction>
+      <reaction id="Reac2_483_0_" name="Reac2" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="B_469_0_" stoichiometry="2" constant="false"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="C_475_0_" stoichiometry="1" constant="false"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> Reac2_483_0__Kf </ci>
+              <apply>
+                <power/>
+                <ci> B_469_0_ </ci>
+                <cn type="integer"> 2 </cn>
+              </apply>
+            </apply>
+          </math>
+          <listOfLocalParameters>
+            <localParameter id="Reac2_483_0__Kf" value="0.0996323317876207" units="per_item_per_second"/>
+          </listOfLocalParameters>
+        </kineticLaw>
+      </reaction>
+      <reaction id="e1_489_0_Complex_formation_" name="e1" reversible="true" fast="false">
+        <annotation>
+          <moose:EnzymaticReaction>
+            <moose:enzyme>MassActionEnz_487_0_</moose:enzyme>
+            <moose:substrates>C_475_0_</moose:substrates>
+            <moose:product>e1_cplx_490_0_</moose:product>
+            <moose:groupName>e1_489_0_</moose:groupName>
+            <moose:stage>1</moose:stage>
+          </moose:EnzymaticReaction>
+        </annotation>
+        <listOfReactants>
+          <speciesReference species="MassActionEnz_487_0_" stoichiometry="1" constant="false"/>
+          <speciesReference species="C_475_0_" stoichiometry="1" constant="false"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="e1_cplx_490_0_" stoichiometry="1" constant="false"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <minus/>
+              <apply>
+                <times/>
+                <ci> k1 </ci>
+                <ci> MassActionEnz_487_0_ </ci>
+                <ci> C_475_0_ </ci>
+              </apply>
+              <apply>
+                <times/>
+                <ci> k2 </ci>
+                <ci> e1_cplx_490_0_ </ci>
+              </apply>
+            </apply>
+          </math>
+          <listOfLocalParameters>
+            <localParameter id="k1" value="0.996323317876207" units="per_item_per_second"/>
+            <localParameter id="k2" value="4" units="per_second"/>
+          </listOfLocalParameters>
+        </kineticLaw>
+      </reaction>
+      <reaction id="e1_489_0_Product_formation_" name="e1" reversible="false" fast="false">
+        <annotation>
+          <moose:EnzymaticReaction>
+            <moose:complex>e1_cplx_490_0_</moose:complex>
+            <moose:enzyme>MassActionEnz_487_0_</moose:enzyme>
+            <moose:product>E_485_0_</moose:product>
+            <moose:groupName>e1_489_0_</moose:groupName>
+            <moose:stage>2</moose:stage>
+          </moose:EnzymaticReaction>
+        </annotation>
+        <listOfReactants>
+          <speciesReference species="e1_cplx_490_0_" stoichiometry="1" constant="false"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="MassActionEnz_487_0_" stoichiometry="1" constant="false"/>
+          <speciesReference species="E_485_0_" stoichiometry="1" constant="false"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> k3 </ci>
+              <ci> e1_cplx_490_0_ </ci>
+            </apply>
+          </math>
+          <listOfLocalParameters>
+            <localParameter id="k3" value="1" units="per_second"/>
+          </listOfLocalParameters>
+        </kineticLaw>
+      </reaction>
+      <reaction id="e2_494_0__MM_Reaction_" name="e2" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="E_485_0_" stoichiometry="1" constant="false"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="F_496_0_" stoichiometry="1" constant="false"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="MM_Enz_492_0_"/>
+        </listOfModifiers>
+        <kineticLaw>
+          <notes>
+            <body xmlns="http://www.w3.org/1999/xhtml">
+		kcat*E_485_0_*MM_Enz_492_0_/(Km +E_485_0_)
+
+	 </body>
+          </notes>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> kcat </ci>
+                <ci> E_485_0_ </ci>
+                <ci> MM_Enz_492_0_ </ci>
+              </apply>
+              <apply>
+                <plus/>
+                <ci> Km </ci>
+                <ci> E_485_0_ </ci>
+              </apply>
+            </apply>
+          </math>
+          <listOfLocalParameters>
+            <localParameter id="Km" value="5.01845125" units="substance"/>
+            <localParameter id="kcat" value="1" units="per_second"/>
+          </listOfLocalParameters>
+        </kineticLaw>
+      </reaction>
+    </listOfReactions>
+  </model>
+</sbml>
